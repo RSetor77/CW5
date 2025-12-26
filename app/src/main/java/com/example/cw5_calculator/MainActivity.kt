@@ -3,6 +3,7 @@ package com.example.cw5_calculator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +16,8 @@ import kotlin.math.PI
 
 class MainActivity : AppCompatActivity() {
     private val operators: Array<Char> = arrayOf('+', '-', '*', '/', '%')
-    private val seps: Array<String> = arrayOf("+", "-", "*", "/", "%", "(", "sin(", "cos(", "tan", "log10(", "log(", "exp(")
+    private val seps: Array<String> = arrayOf("+", "-", "*", "/", "%", "(", ")", "sin(", "cos(", "tan", "log10(", "log(", "exp(")
+    private var memoryVar: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +54,15 @@ class MainActivity : AppCompatActivity() {
             isNum = false
         }
         return isNum
+    }
+
+    fun insertChar(originalString: String, index: Int, charToInsert: Char): String {
+        if (index < 0 || index > originalString.length) {
+            return originalString
+        }
+        val part1 = originalString.substring(0, index)
+        val part2 = originalString.substring(index)
+        return (part1 + charToInsert + part2).trim()
     }
 
     fun onNumClick(sender: View)
@@ -202,45 +213,15 @@ class MainActivity : AppCompatActivity() {
         val command: String = findViewById<Button>(sender.id).text.toString()
         when(command)
         {
-            "mod" -> addOperator('%')
-            "CE" -> numTextBox.text = ""
             "C" ->
             {
                 numTextBox.text = ""
                 findViewById<TextView>(R.id.calc_text).text = " "
             }
-            "⌫" -> if (numTextBox.text != "") numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
-
-            "00" -> {
-                if (numTextBox.text != "0" && strIsNum(numTextBox.text[numTextBox.length() - 1].toString()))
-                    numTextBox.text = numTextBox.text.toString().plus("00")
-            }
-            "(" -> numTextBox.text = numTextBox.text.toString().plus('(')
-            ")" -> numTextBox.text = numTextBox.text.toString().plus(')')
+            "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
             "." -> addSeparator()
             "√" -> insertFunc("sqrt")
-            "∛" -> insertFunc("cbrt")
-            "exp" -> insertFunc("exp")
-            "lg" -> insertFunc("log10")
-            "ln" -> insertFunc("log")
-            "sin()" -> insertFunc("sin")
-            "cos()" -> insertFunc("cos")
-            "tan()" -> insertFunc("tan")
-            "+/-" -> UnaryMP()
-            "pi" ->
-            {
-                if (numTextBox.text.equals("0"))
-                    numTextBox.text = PI.toString()
-                else
-                    numTextBox.text = numTextBox.text.toString().plus(PI)
-            }
-            "e" ->
-            {
-                if (numTextBox.text.equals("0"))
-                    numTextBox.text = E.toString()
-                else
-                    numTextBox.text = numTextBox.text.toString().plus(E)
-            }
+            "±" -> UnaryMP()
             "=" -> calc()
         }
 
