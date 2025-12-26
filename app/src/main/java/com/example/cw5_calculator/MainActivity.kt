@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
     }
     fun calc()
     {
-        findViewById<TextView>(R.id.calc_text).text = findViewById<TextView>(R.id.num_text).text
+        findViewById<TextView>(R.id.calc_text).text = findViewById<TextView>(R.id.num_text).text.toString().plus("=")
         var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString()).toString()
         findViewById<TextView>(R.id.num_text).text = result
     }
