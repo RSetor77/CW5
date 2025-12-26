@@ -8,16 +8,25 @@
     <LinearLayout
         android:id="@+id/lut_lines"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/calc_text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/num_text"
             style="@android:style/Widget.DeviceDefault.Light.TextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="0"
             android:textAlignment="textEnd"
             android:textSize="48sp" />
@@ -26,8 +35,11 @@
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lut_lines">
 
         <TableRow
             android:layout_width="match_parent"
@@ -418,4 +430,5 @@
         </TableRow>
 
     </TableLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
