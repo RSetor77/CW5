@@ -156,7 +156,14 @@ class MainActivity : AppCompatActivity() {
             result = ""
         return result
     }
-
+    fun funCalc(): Double
+    {
+        var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString()).toString()
+        if (isDouble(result))
+            return result.toDouble()
+        else
+            return 0.0
+    }
     fun calc()
     {
         findViewById<TextView>(R.id.calc_text).text = findViewById<TextView>(R.id.num_text).text
@@ -222,6 +229,16 @@ class MainActivity : AppCompatActivity() {
             "." -> addSeparator()
             "√" -> insertFunc("sqrt")
             "±" -> UnaryMP()
+            "MS" -> memoryVar = funCalc()
+            "MC" -> memoryVar = 0.0
+            "MR" -> {
+                if (numTextBox.text.equals("0"))
+                    numTextBox.text = memoryVar.toString()
+                else
+                    numTextBox.text = numTextBox.text.toString().plus(memoryVar.toString())
+            }
+            "M+" -> memoryVar += funCalc()
+            "M-" -> memoryVar -= funCalc()
             "=" -> calc()
         }
 
