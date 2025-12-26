@@ -3,32 +3,55 @@ package com.example.cw5_calculator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
+import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import net.objecthunter.exp4j.Expression
 import net.objecthunter.exp4j.ExpressionBuilder
-import kotlin.math.E
-import kotlin.math.PI
 
 class MainActivity : AppCompatActivity() {
-    private val operators: Array<Char> = arrayOf('+', '-', '*', '/', '%')
-    private val seps: Array<String> = arrayOf("+", "-", "*", "/", "%", "(", ")", "sin(", "cos(", "tan", "log10(", "log(", "exp(")
+    private val operators: Array<Char> = arrayOf('+', '-', '*', '/')
     private var memoryVar: Double = 0.0
+
+    private fun initViews()
+    {
+        val mainLayout: TableLayout = findViewById(R.id.tableLayout)
+        val childCount: Int = mainLayout.childCount
+        for(i in 0 until childCount)
+        {
+
+            val childView: TableRow = (mainLayout.getChildAt(i) as TableRow)
+            for(child in childView.children)
+            {
+                if (child is Button)
+                    if (arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0").contains(child.text.toString()))
+                        child.setOnClickListener { onNumClick(child) }
+                    else if (operators.contains(child.text.toString()[0]))
+                        child.setOnClickListener { onNumClick(child) }
+                    else
+                        child.setOnClickListener { onFuncClick(child) }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        initViews()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
     }
+
 
     fun clearErr()
     {
@@ -37,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     }
     fun isOperator(op: Char): Boolean
     {
-        var isOp: Boolean = false
+        var isOp = false
         if (operators.contains(op))
             isOp = true
         return isOp
@@ -45,24 +68,14 @@ class MainActivity : AppCompatActivity() {
 
     fun strIsNum(str: String): Boolean
     {
-        var isNum: Boolean = false
+        var isNum = false
         try {
-            val num: Short = str.toShort()
+            str.toShort()
             isNum = true
         }
         catch (e: Exception) {
-            isNum = false
         }
         return isNum
-    }
-
-    fun insertChar(originalString: String, index: Int, charToInsert: Char): String {
-        if (index < 0 || index > originalString.length) {
-            return originalString
-        }
-        val part1 = originalString.substring(0, index)
-        val part2 = originalString.substring(index)
-        return (part1 + charToInsert + part2).trim()
     }
 
     fun onNumClick(sender: View)
@@ -109,29 +122,23 @@ class MainActivity : AppCompatActivity() {
 
     fun isInt(num: String): Boolean
     {
-        var isInt: Boolean = false
+        var isInt = false
         try {
-            val intNum: Int = num.toInt()
+            num.toInt()
             isInt = true
         }
-        catch (e: Exception)
-        {
-           isInt = false
-        }
+        catch (e: Exception) { }
         return isInt
     }
 
     fun isDouble(num: String): Boolean
     {
-        var isDouble: Boolean = false
+        var isDouble = false
         try {
-            val intNum: Double = num.toDouble()
+            num.toDouble()
             isDouble = true
         }
-        catch (e: Exception)
-        {
-            isDouble = false
-        }
+        catch (e: Exception) { }
         return isDouble
     }
 
@@ -158,16 +165,18 @@ class MainActivity : AppCompatActivity() {
     }
     fun funCalc(): Double
     {
-        var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString()).toString()
+        val result: String = eval(findViewById<TextView>(R.id.num_text).text.toString())
+        var number: Double
         if (isDouble(result))
-            return result.toDouble()
+            number = result.toDouble()
         else
-            return 0.0
+            number = 0.0
+        return number
     }
     fun calc()
     {
         findViewById<TextView>(R.id.calc_text).text = findViewById<TextView>(R.id.num_text).text.toString().plus("=")
-        var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString()).toString()
+        var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString())
         findViewById<TextView>(R.id.num_text).text = result
     }
 
@@ -178,21 +187,21 @@ class MainActivity : AppCompatActivity() {
 
     fun addSeparator()
     {
-        val regexString: String = seps.joinToString("|") { Regex.escape(it.toString()) }
+        val regexString: String = arrayOf("+", "-", "*", "/", "sqrt(").joinToString("|") { Regex.escape(it) }
         val regex = Regex(regexString)
         val expression: Array<String> = findViewById<TextView>(R.id.num_text).text.toString().split(regex).toTypedArray()
         if (strIsNum(expression[expression.lastIndex]))
             findViewById<TextView>(R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString().plus('.')
     }
 
-    fun UnaryMP()
+    fun unaryMP()
     {
-        val regexString: String = seps.joinToString("|") { Regex.escape(it.toString()) }
+        val regexString: String = arrayOf("+", "-", "*", "/", "sqrt(").joinToString("|") { Regex.escape(it) }
         val regex = Regex(regexString)
         val expression: Array<String> = findViewById<TextView>(R.id.num_text).text.toString().split(regex).toTypedArray()
         if (isDouble(expression[expression.lastIndex]))
         {
-            var unChr: Char = '-'
+            var unChr = '-'
             try
             {
                 if (findViewById<TextView>(R.id.num_text).text.toString()[findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex]) - 1] == '-')
@@ -208,8 +217,7 @@ class MainActivity : AppCompatActivity() {
                     R.id.num_text).text.toString().substring(0, findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex])) + funcStr
             else
                 findViewById<TextView>(
-                    R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString().substring(0,
-                    findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex]) - 1) + funcStr
+                    R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString().substring(0, findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex]) - 1) + funcStr
         }
     }
 
@@ -228,7 +236,7 @@ class MainActivity : AppCompatActivity() {
             "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
             "." -> addSeparator()
             "√" -> insertFunc("sqrt")
-            "±" -> UnaryMP()
+            "±" -> unaryMP()
             "MS" -> memoryVar = funCalc()
             "MC" -> memoryVar = 0.0
             "MR" -> {
