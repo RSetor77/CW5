@@ -41,20 +41,22 @@ class MainActivity : AppCompatActivity() {
             for(child in childView.children)
             {
                 if (child is Button)
+                {
+
                     if (arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0").contains(child.text.toString()))
                         child.setOnClickListener {
+                            clearErr()
                             val numTextBox = findViewById<TextView>(R.id.num_text)
-                            if (numTextBox.text.toString() == "0" || numTextBox.text.toString().isEmpty()) {
+                            if (numTextBox.text.toString() == "0" || numTextBox.text.toString().isEmpty())
+                            {
                                 numTextBox.text = child.text
-                            }
-                            else numTextBox.text = numTextBox.text.toString().plus(child.text)
+                            } else numTextBox.text = numTextBox.text.toString().plus(child.text)
                         }
                     else if (operators.contains(child.text.toString()[0]))
                         child.setOnClickListener {
+                            clearErr()
                             val numTextBox = findViewById<TextView>(R.id.num_text)
                             val lastChr: Char = numTextBox.text[numTextBox.text.lastIndex]
-
-                            clearErr()
                             if (lastChr != child.text[0] && !operators.contains(lastChr))
                                 numTextBox.text = numTextBox.text.toString().plus(child.text[0])
                             else if (operators.contains(child.text[0]) && !numTextBox.text.isEmpty()) {
@@ -69,37 +71,43 @@ class MainActivity : AppCompatActivity() {
                             val numTextBox = findViewById<TextView>(R.id.num_text)
                             val lastChr: Char = numTextBox.text[numTextBox.text.lastIndex]
                             val command: String = child.text.toString()
-                            when(command)
-                            {
-                                "C" ->
-                                {
+                            when (command) {
+                                "C" -> {
                                     numTextBox.text = ""
                                     findViewById<TextView>(R.id.calc_text).text = " "
                                 }
-                                "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
+
+                                "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text =
+                                    numTextBox.text.substring(0, numTextBox.text.length - 1)
+
                                 "." -> addSeparator()
                                 "√" -> {
                                     if (!(numTextBox.text.isEmpty()) && !(operators.contains(lastChr)))
                                         numTextBox.text = numTextBox.text.toString().plus("^(1/2)")
                                 }
+
                                 "±" -> unaryMP(numTextBox)
                                 "1/X" -> {
-                                    if (!(numTextBox.text.isEmpty()) &&!(operators.contains(lastChr)) )
+                                    if (!(numTextBox.text.isEmpty()) && !(operators.contains(lastChr)))
                                         numTextBox.text = numTextBox.text.toString().plus("^-1")
                                 }
+
                                 "MS" -> memoryVar = funCalc()
                                 "MC" -> memoryVar = 0.0
                                 "MR" -> {
                                     if (numTextBox.text.equals("0"))
                                         numTextBox.text = memoryVar.toString()
                                     else
-                                        numTextBox.text = numTextBox.text.toString().plus(memoryVar.toString())
+                                        numTextBox.text =
+                                            numTextBox.text.toString().plus(memoryVar.toString())
                                 }
+
                                 "M+" -> memoryVar += funCalc()
                                 "M-" -> memoryVar -= funCalc()
                                 "=" -> calc()
                             }
                         }
+                }
             }
         }
     }
