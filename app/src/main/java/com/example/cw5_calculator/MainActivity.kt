@@ -17,12 +17,23 @@ class MainActivity : AppCompatActivity() {
     private val operators: Array<Char> = arrayOf('+', '-', '*', '/')
     private var memoryVar: Double = 0.0
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
+        initViews()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+    }
+
     private fun initViews()
     {
-        val numTextBox: TextView = findViewById(R.id.num_text)
         val mainLayout: TableLayout = findViewById(R.id.tableLayout)
         val childCount: Int = mainLayout.childCount
-        val lastChr: Int = numTextBox.text.lastIndex
         for(i in 0 until childCount)
         {
 
@@ -32,20 +43,22 @@ class MainActivity : AppCompatActivity() {
                 if (child is Button)
                     if (arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0").contains(child.text.toString()))
                         child.setOnClickListener {
+                            val numTextBox = findViewById<TextView>(R.id.num_text)
                             if (numTextBox.text.toString() == "0" || numTextBox.text.toString().isEmpty()) {
                                 numTextBox.text = child.text
                             }
-                            else if (numTextBox.text[lastChr] != ')') {
-                                numTextBox.text = numTextBox.text.toString().plus(child.text)
-                            }
+                            else numTextBox.text = numTextBox.text.toString().plus(child.text)
                         }
                     else if (operators.contains(child.text.toString()[0]))
                         child.setOnClickListener {
+                            val numTextBox = findViewById<TextView>(R.id.num_text)
+                            val lastChr: Char = numTextBox.text[numTextBox.text.lastIndex]
+
                             clearErr()
-                            if (numTextBox.text.toString()[lastChr] != child.text[0] && !operators.contains(child.text[0]))
+                            if (lastChr != child.text[0] && !operators.contains(lastChr))
                                 numTextBox.text = numTextBox.text.toString().plus(child.text[0])
                             else if (operators.contains(child.text[0]) && !numTextBox.text.isEmpty()) {
-                                val numSub = numTextBox.text.substring(0, lastChr)
+                                val numSub = numTextBox.text.substring(0, numTextBox.text.lastIndex)
                                 numTextBox.text =
                                     numSub.plus(child.text[0])
                             }
@@ -53,6 +66,8 @@ class MainActivity : AppCompatActivity() {
                     else
                         child.setOnClickListener {
                             clearErr()
+                            val numTextBox = findViewById<TextView>(R.id.num_text)
+                            val lastChr: Char = numTextBox.text[numTextBox.text.lastIndex]
                             val command: String = child.text.toString()
                             when(command)
                             {
@@ -64,12 +79,12 @@ class MainActivity : AppCompatActivity() {
                                 "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
                                 "." -> addSeparator()
                                 "√" -> {
-                                    if (!(numTextBox.text.isEmpty()) && !(operators.contains(numTextBox.text[lastChr])))
+                                    if (!(numTextBox.text.isEmpty()) && !(operators.contains(lastChr)))
                                         numTextBox.text = numTextBox.text.toString().plus("^(1/2)")
                                 }
                                 "±" -> unaryMP(numTextBox)
                                 "1/X" -> {
-                                    if (!(numTextBox.text.isEmpty()) &&!(operators.contains(numTextBox.text[lastChr])) )
+                                    if (!(numTextBox.text.isEmpty()) &&!(operators.contains(lastChr)) )
                                         numTextBox.text = numTextBox.text.toString().plus("^-1")
                                 }
                                 "MS" -> memoryVar = funCalc()
@@ -89,20 +104,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        initViews()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-    }
-
-
     fun clearErr()
     {
         if (findViewById<TextView>(R.id.num_text).text.toString() == "Ошибка выражения")
@@ -119,17 +120,6 @@ class MainActivity : AppCompatActivity() {
         catch (e: Exception) {
         }
         return isNum
-    }
-
-    fun isInt(num: String): Boolean
-    {
-        var isInt = false
-        try {
-            num.toInt()
-            isInt = true
-        }
-        catch (e: Exception) { }
-        return isInt
     }
 
     fun isDouble(num: String): Boolean
@@ -149,8 +139,6 @@ class MainActivity : AppCompatActivity() {
         try {
             val ex: Expression = ExpressionBuilder(expression).build()
             result = ex.evaluate().toString()
-            if (isInt(result))
-                result = result.toDouble().toInt().toString()
         }
         catch (e: ArithmeticException)
         {
