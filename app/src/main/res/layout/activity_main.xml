@@ -72,7 +72,8 @@
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
                 android:text="MC"
-                android:textSize="31sp" />
+                android:textColor="#000000"
+                android:textSize="28sp" />
 
             <Button
                 android:id="@+id/btn_MR"
@@ -86,7 +87,8 @@
                 android:paddingLeft="6dp"
                 android:paddingRight="6dp"
                 android:text="MR"
-                android:textSize="31sp" />
+                android:textColor="#000000"
+                android:textSize="28sp" />
 
             <Button
                 android:id="@+id/btn_MS"
@@ -98,7 +100,8 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="MS"
-                android:textSize="31sp" />
+                android:textColor="#000000"
+                android:textSize="28sp" />
 
             <Button
                 android:id="@+id/btn_MPlus"
@@ -110,7 +113,8 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="M+"
-                android:textSize="32sp" />
+                android:textColor="#000000"
+                android:textSize="28sp" />
 
             <Button
                 android:id="@+id/btn_MMinus"
@@ -122,7 +126,8 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="M-"
-                android:textSize="34sp" />
+                android:textColor="#000000"
+                android:textSize="28sp" />
 
 
         </TableRow>
@@ -142,6 +147,7 @@
                 android:insetLeft="7dp"
                 android:scaleX="1.1"
                 android:text="⌫"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -156,6 +162,7 @@
                 android:insetLeft="8dp"
                 android:insetRight="8dp"
                 android:text="±"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -169,6 +176,7 @@
                 android:insetRight="7dp"
                 android:scaleX="1.1"
                 android:text="C"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
         </TableRow>
@@ -187,6 +195,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="7"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -199,6 +208,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="8"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -211,6 +221,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="9"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -223,6 +234,7 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="√"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -237,6 +249,7 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:text="1/X"
+                android:textColor="#000000"
                 android:textSize="24sp" />
 
         </TableRow>
@@ -255,6 +268,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="4"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -267,6 +281,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="5"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -279,6 +294,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="6"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -291,6 +307,7 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="+"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -303,6 +320,7 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="*"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
         </TableRow>
@@ -321,6 +339,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="1"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -332,6 +351,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="#C8C8C8"
                 android:text="2"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -344,6 +364,7 @@
                 android:backgroundTint="#C8C8C8"
                 android:padding="10dp"
                 android:text="3"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -356,6 +377,7 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="-"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -368,6 +390,7 @@
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="10dp"
                 android:text="/"
+                android:textColor="#000000"
                 android:textSize="34sp" />
         </TableRow>
 
@@ -387,6 +410,7 @@
                 android:padding="10dp"
                 android:scaleX="1.1"
                 android:text="0"
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -404,6 +428,7 @@
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
                 android:text="."
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
             <Button
@@ -418,6 +443,7 @@
                 android:padding="10dp"
                 android:scaleX="1.1"
                 android:text="="
+                android:textColor="#000000"
                 android:textSize="34sp" />
 
         </TableRow>

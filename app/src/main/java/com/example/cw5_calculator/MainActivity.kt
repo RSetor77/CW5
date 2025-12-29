@@ -1,7 +1,6 @@
 package com.example.cw5_calculator
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -20,8 +19,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews()
     {
+        val numTextBox: TextView = findViewById(R.id.num_text)
         val mainLayout: TableLayout = findViewById(R.id.tableLayout)
         val childCount: Int = mainLayout.childCount
+        val lastChr: Int = numTextBox.text.lastIndex
         for(i in 0 until childCount)
         {
 
@@ -30,11 +31,60 @@ class MainActivity : AppCompatActivity() {
             {
                 if (child is Button)
                     if (arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0").contains(child.text.toString()))
-                        child.setOnClickListener { onNumClick(child) }
+                        child.setOnClickListener {
+                            if (numTextBox.text.toString() == "0" || numTextBox.text.toString().isEmpty()) {
+                                numTextBox.text = child.text
+                            }
+                            else if (numTextBox.text[lastChr] != ')') {
+                                numTextBox.text = numTextBox.text.toString().plus(child.text)
+                            }
+                        }
                     else if (operators.contains(child.text.toString()[0]))
-                        child.setOnClickListener { onNumClick(child) }
+                        child.setOnClickListener {
+                            clearErr()
+                            if (numTextBox.text.toString()[lastChr] != child.text[0] && !operators.contains(child.text[0]))
+                                numTextBox.text = numTextBox.text.toString().plus(child.text[0])
+                            else if (operators.contains(child.text[0]) && !numTextBox.text.isEmpty()) {
+                                val numSub = numTextBox.text.substring(0, lastChr)
+                                numTextBox.text =
+                                    numSub.plus(child.text[0])
+                            }
+                        }
                     else
-                        child.setOnClickListener { onFuncClick(child) }
+                        child.setOnClickListener {
+                            clearErr()
+                            val command: String = child.text.toString()
+                            when(command)
+                            {
+                                "C" ->
+                                {
+                                    numTextBox.text = ""
+                                    findViewById<TextView>(R.id.calc_text).text = " "
+                                }
+                                "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
+                                "." -> addSeparator()
+                                "√" -> {
+                                    if (!(numTextBox.text.isEmpty()) && !(operators.contains(numTextBox.text[lastChr])))
+                                        numTextBox.text = numTextBox.text.toString().plus("^(1/2)")
+                                }
+                                "±" -> unaryMP(numTextBox)
+                                "1/X" -> {
+                                    if (!(numTextBox.text.isEmpty()) &&!(operators.contains(numTextBox.text[lastChr])) )
+                                        numTextBox.text = numTextBox.text.toString().plus("^-1")
+                                }
+                                "MS" -> memoryVar = funCalc()
+                                "MC" -> memoryVar = 0.0
+                                "MR" -> {
+                                    if (numTextBox.text.equals("0"))
+                                        numTextBox.text = memoryVar.toString()
+                                    else
+                                        numTextBox.text = numTextBox.text.toString().plus(memoryVar.toString())
+                                }
+                                "M+" -> memoryVar += funCalc()
+                                "M-" -> memoryVar -= funCalc()
+                                "=" -> calc()
+                            }
+                        }
             }
         }
     }
@@ -58,13 +108,6 @@ class MainActivity : AppCompatActivity() {
         if (findViewById<TextView>(R.id.num_text).text.toString() == "Ошибка выражения")
             findViewById<TextView>(R.id.num_text).text = "0"
     }
-    fun isOperator(op: Char): Boolean
-    {
-        var isOp = false
-        if (operators.contains(op))
-            isOp = true
-        return isOp
-    }
 
     fun strIsNum(str: String): Boolean
     {
@@ -76,48 +119,6 @@ class MainActivity : AppCompatActivity() {
         catch (e: Exception) {
         }
         return isNum
-    }
-
-    fun onNumClick(sender: View)
-    {
-        clearErr()
-        val numTextBox: TextView = findViewById(R.id.num_text)
-        val num: String = findViewById<Button>(sender.id).text.toString()
-        val numTxt: String = numTextBox.text.toString()
-        val lastChr: Int = numTxt.length - 1
-
-        if (numTxt == "0" || numTxt == "") {
-            numTextBox.text = num
-        }
-        else if (numTxt[lastChr] != ')') {
-            numTextBox.text = numTxt.plus(num)
-        }
-        return
-    }
-    fun addOperator(op: Char)
-    {
-        val numTextBox: TextView = findViewById(R.id.num_text)
-        var numTxt: String = numTextBox.text.toString()
-        if (numTxt.isEmpty())
-            return
-        val lastChr: Int = numTxt.length - 1
-        val isOp: Boolean = isOperator(numTxt[lastChr])
-
-        if (numTxt[lastChr] != op && !isOp)
-            numTextBox.text = numTxt.plus(op)
-        else if (isOp)
-        {
-            numTxt = numTxt.substring(0, lastChr)
-            numTextBox.text = numTxt.plus(op)
-        }
-    }
-
-    fun onOpClick(sender: View)
-    {
-        clearErr()
-        val btnSender: Button = findViewById(sender.id)
-        val op: Char = btnSender.text[0]
-        addOperator(op)
     }
 
     fun isInt(num: String): Boolean
@@ -144,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     fun eval(expression: String): String {
 
-        var result: String? = ""
+        var result: String?
         try {
             val ex: Expression = ExpressionBuilder(expression).build()
             result = ex.evaluate().toString()
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         }
         catch (e: ArithmeticException)
         {
-            result = e.localizedMessage?.toString()
+            result = e.localizedMessage
         }
         catch (e: Exception)
         {
@@ -166,23 +167,16 @@ class MainActivity : AppCompatActivity() {
     fun funCalc(): Double
     {
         val result: String = eval(findViewById<TextView>(R.id.num_text).text.toString())
-        var number: Double
+        var number = 0.0
         if (isDouble(result))
             number = result.toDouble()
-        else
-            number = 0.0
         return number
     }
     fun calc()
     {
         findViewById<TextView>(R.id.calc_text).text = findViewById<TextView>(R.id.num_text).text.toString().plus("=")
-        var result: String = eval(findViewById<TextView>(R.id.num_text).text.toString())
+        val result: String = eval(findViewById<TextView>(R.id.num_text).text.toString())
         findViewById<TextView>(R.id.num_text).text = result
-    }
-
-    fun insertFunc(fnc: String)
-    {
-        findViewById<TextView>(R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString() + fnc + "("
     }
 
     fun addSeparator()
@@ -194,17 +188,17 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString().plus('.')
     }
 
-    fun unaryMP()
+    fun unaryMP(numTextBox: TextView)
     {
         val regexString: String = arrayOf("+", "-", "*", "/", "sqrt(").joinToString("|") { Regex.escape(it) }
         val regex = Regex(regexString)
-        val expression: Array<String> = findViewById<TextView>(R.id.num_text).text.toString().split(regex).toTypedArray()
+        val expression: Array<String> = numTextBox.text.toString().split(regex).toTypedArray()
         if (isDouble(expression[expression.lastIndex]))
         {
             var unChr = '-'
             try
             {
-                if (findViewById<TextView>(R.id.num_text).text.toString()[findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex]) - 1] == '-')
+                if (numTextBox.text.toString()[numTextBox.text.toString().lastIndexOf(expression[expression.lastIndex]) - 1] == '-')
                     unChr = ' '
             }
             catch (e: Exception)
@@ -213,42 +207,9 @@ class MainActivity : AppCompatActivity() {
             }
             val funcStr: String = (unChr + expression[expression.lastIndex]).trim()
             if (unChr == '-')
-                findViewById<TextView>(R.id.num_text).text = findViewById<TextView>(
-                    R.id.num_text).text.toString().substring(0, findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex])) + funcStr
+                numTextBox.text = numTextBox.text.substring(0, numTextBox.text.lastIndexOf(expression[expression.lastIndex])) + funcStr
             else
-                findViewById<TextView>(
-                    R.id.num_text).text = findViewById<TextView>(R.id.num_text).text.toString().substring(0, findViewById<TextView>(R.id.num_text).text.toString().lastIndexOf(expression[expression.lastIndex]) - 1) + funcStr
+                numTextBox.text = numTextBox.text.substring(0, numTextBox.text.lastIndexOf(expression[expression.lastIndex]) - 1) + funcStr
         }
-    }
-
-    fun onFuncClick(sender: View)
-    {
-        clearErr()
-        val numTextBox: TextView = findViewById(R.id.num_text)
-        val command: String = findViewById<Button>(sender.id).text.toString()
-        when(command)
-        {
-            "C" ->
-            {
-                numTextBox.text = ""
-                findViewById<TextView>(R.id.calc_text).text = " "
-            }
-            "⌫" -> if (!numTextBox.text.isEmpty()) numTextBox.text = numTextBox.text.substring(0, numTextBox.text.length - 1)
-            "." -> addSeparator()
-            "√" -> insertFunc("sqrt")
-            "±" -> unaryMP()
-            "MS" -> memoryVar = funCalc()
-            "MC" -> memoryVar = 0.0
-            "MR" -> {
-                if (numTextBox.text.equals("0"))
-                    numTextBox.text = memoryVar.toString()
-                else
-                    numTextBox.text = numTextBox.text.toString().plus(memoryVar.toString())
-            }
-            "M+" -> memoryVar += funCalc()
-            "M-" -> memoryVar -= funCalc()
-            "=" -> calc()
-        }
-
     }
 }
